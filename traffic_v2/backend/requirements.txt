@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+python-multipart
+imageio-ffmpeg
+opencv-python
+numpy
+httpx            # only needed for backend/tests/smoke_test.py and backend/seed_demo.py

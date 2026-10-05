@@ -1,0 +1,48 @@
+# ---- Secrets: NEVER commit these (.env.example is fine, .env is not) ----
+.env
+*.env
+!.env.example
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# ---- Data: too big, and the videos are not yours to redistribute ----
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.m4v
+*.webm
+# cached features (rebuilt by extract_features.py) and their tensors
+features/
+*.pt
+# annotated output videos from detect.py
+runs/
+# old/large checkpoints (temporal.pth is small and IS committed)
+model.pth
+
+# ---- Runtime data created by the app ----
+backend_data/
+backend/storage/
+storage/
+*.db
+*.db-wal
+*.db-shm
+*.log
+
+# ---- Frontend ----
+node_modules/
+frontend/dist/
+
+# ---- Editors / OS ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

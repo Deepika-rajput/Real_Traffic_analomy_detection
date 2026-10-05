@@ -1,0 +1,15 @@
+.git
+**/node_modules
+**/__pycache__
+**/*.pyc
+frontend
+backend_data
+features
+runs
+holdout
+videos
+*.mp4
+*.avi
+*.mov
+*.mkv
+.env
