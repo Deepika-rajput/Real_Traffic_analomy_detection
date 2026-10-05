@@ -4,18 +4,16 @@ An end-to-end system that watches traffic video, classifies what it sees as **no
 and lets a human operator review each alert (video clip, snapshot, map) before drafting emails to the nearest authorities.
 Runs on a **CPU only** machine.
 
-<!-- After pushing: save a screenshot as docs/dashboard.png, then delete this line and uncomment the next one.
-![Dashboard](docs/dashboard.png)
--->
-**Demo video:** _add a link here_
+<img width="1892" height="880" alt="Screenshot 2026-10-05 234128" src="https://github.com/user-attachments/assets/d676cbf9-97a8-41d8-b62b-4ed2488aad2b" />
+
 
 ## What it does
-- Classifies traffic video into 4 states with a **CNN (spatial) + Transformer (temporal)** model, plus optical-flow motion features.
-- **Web app** (React): live camera tiles, review queue, evidence clip player with the alert moment marked, map, confirm / dismiss.
-- **Alerts with safeguards:** nothing is sent until an operator confirms. Emails go to the nearest active police / hospital /
-  traffic-control contact, can be edited first, and track acknowledgement (with escalation to the next-nearest authority).
-- **Feedback loop:** confirmed events and dismissed false alarms export as new training data.
-- **Docker:** one command starts the backend (FastAPI + model workers) and the frontend (nginx).
+
+- **Traffic classification:** Classifies traffic videos into 4 states — normal, accident, sudden stop, and congestion — using a CNN for spatial features, a Transformer for temporal patterns, and optical-flow motion features.
+- **Web dashboard:** React-based interface with live camera tiles, an event review queue, evidence clips with the alert moment highlighted, and a map view.
+- **Human-reviewed alerts:** Alerts are not sent automatically. An operator must confirm an event first. The system then identifies the nearest active police, hospital, or traffic-control contact, allows the message to be edited, and tracks acknowledgement with escalation to the next-nearest authority.
+- **Feedback loop:** Confirmed events and dismissed false alarms can be exported as additional training data.
+- **Dockerized deployment:** Docker Compose starts the FastAPI backend, model workers, and React frontend served through nginx.
 
 ## How the model works
 ```mermaid
@@ -56,25 +54,24 @@ flowchart LR
   API -.->|"after human confirms"| M["SMTP or outbox files"]
 ```
 
-## Results (honest version)
+## Results 
 | Test | Result |
 |---|---|
 | Holdout: 3 videos per class, never used in training, new sources | **11 / 12 videos correct** |
 
-Reproduce with `python evaluate_folder.py --root holdout`. This is a small test (12 videos), so the true accuracy could plausibly
-be anywhere from roughly 65% to 98%; treat it as evidence that the approach works, not as a benchmark.
+Reproduce with `python evaluate_folder.py --root holdout`.The holdout set contains 3 videos per class from sources not used during training.  
+This is a small evaluation (12 videos), so the result should be treated as an
+initial validation of the approach rather than a benchmark of real-world performance.
 
 ## Limitations
-- **Little data:** about 12-15 training videos per class; accident has the least because accident video is hard to find.
-- **Whole-clip labels are noisy:** a clip labeled "sudden stop" may contain seconds of normal driving. Trimming clips to the event
-  (see below) helps.
-- **False alerts on long normal footage** have not been measured rigorously. An early test on dense, flowing highway video showed
-  a few per ~7 minutes, before later improvements. The human confirmation step exists because of this.
-- **Camera dependence:** trained on a handful of camera views; new cameras (night, rain, different angle) will be less accurate.
-- **Never tested on a real live camera**, only on recorded clips and uploads. Live sources are supported (RTSP, webcam stream)
-  but unproven.
-- "Nearest authority" uses straight-line distance, not driving time. Use test email addresses; real contacts need agreements and
-  verification that this project does not provide.
+
+- **Limited data:** About 15 training videos per class. The accident class has fewer examples because suitable accident footage is harder to obtain.
+- **Noisy whole-clip labels:** A video labeled as "sudden stop," for example, may contain several seconds of normal driving. Trimming clips to focus on the actual event improves label quality.
+- **False alerts on long normal footage:** False-positive rates have not been measured rigorously. An early test on dense, flowing highway footage produced a few false alerts over approximately 7 minutes, before later improvements. The human-confirmation step is therefore important.
+- **Camera dependence:** Training used a limited number of camera views. Performance may decrease on significantly different conditions such as night scenes, rain, or different camera angles.
+- **Live-camera validation:** The system has only been tested on recorded clips and uploaded videos. RTSP and webcam streams are supported, but live-camera performance has not yet been validated.
+- **Authority distance:** The "nearest authority" is selected using straight-line distance rather than actual driving time.
+- **Contact information:** The project should use test email addresses during development. Real authority contacts require appropriate agreements and verification and are not provided by this project.
 
 ## Quick start (Docker)
 Needs Docker Desktop. The trained model `temporal.pth` is included.
